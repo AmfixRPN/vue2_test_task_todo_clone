@@ -10,31 +10,59 @@ export default new Vuex.Store({
   state: {
     todos: [],
   },
-  getters: {},
-  mutations: {},
+  getters: {
+    todos: (state) => state.todos,
+  },
+  mutations: {
+    setTodos(state, payload) {
+      state.todos = payload;
+    }
+  },
   actions: {
-    getTodos: () => {
+    async getTodos({ commit }) {
       try {
-        axios.get(`https://crudcrud.com/api/${currentToken}/todos`)
-          .then((data) => {
-            this.state.todos = data;
-          });
+        const res = await axios.get(`https://crudcrud.com/api/${currentToken}/todos`)
+        commit("setTodos", res.data);
       } catch (error) {
-        console.log("Error", error.stack);
-        console.log("Error", error.name);
-        console.log("Error", error.message);
+        console.error("getTodo error:", error.stack);
+        console.error("getTodo error:", error.name);
+        console.error("getTodo error:", error.message);
         throw new Error(error);
       }
     },
-    postTodo: (todo) => {
-      axios.post(`https://crudcrud.com/api/${currentToken}/todos`, todo);
+    async postTodo({ dispatch }, todo) {
+      try {
+        await axios.post(`https://crudcrud.com/api/${currentToken}/todos`, todo);
+        dispatch("getTodos");
+      } catch (error) {
+        console.error("postTodo error:", error.stack);
+        console.error("postTodo error:", error.name);
+        console.error("postTodo error:", error.message);
+        throw new Error(error);
+      }
     },
-    deleteTodo: (id) => {
-      axios.delete(`https://crudcrud.com/api/${currentToken}/todos/${id}`);
+    async deleteTodo({ dispatch }, id) {
+      try {
+        await axios.delete(`https://crudcrud.com/api/${currentToken}/todos/${id}`);
+        dispatch("getTodos");
+      } catch (error) {
+        console.error("deleteTodo error:", error.stack);
+        console.error("deleteTodo error:", error.name);
+        console.error("deleteTodo error:", error.message);
+        throw new Error(error);
+      }
     },
-    putTodo: (todo, id) => {
-      axios.put(`https://crudcrud.com/api/${currentToken}/todos/${id}`, todo);
-    },
+    async putTodo({ dispatch }, { todo, id }) {
+      try {
+        await axios.put(`https://crudcrud.com/api/${currentToken}/todos/${id}`, todo);
+        dispatch("getTodos");
+      } catch (error) {
+        console.error("putTodo error:", error.stack);
+        console.error("putTodo error:", error.name);
+        console.error("putTodo error:", error.message);
+        throw new Error(error);
+      }
+    }
   },
   modules: {},
 });
