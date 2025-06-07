@@ -1,23 +1,41 @@
 <script>
-import store from "@/store/index";
-
 export default {
   name: "TodoItem",
-  beforeMount() {
-    store.actions.getTodos.dispatch();
-  }
+  data() {
+    return {
+      showEditModal: false,
+    };
+  },
+  props: {
+    todo: {
+      type: Object,
+      required: true,
+    },
+  },
+  // computed: {
+  //   todos() {
+  //     return this.$store.getters.todos;
+  //   },
+  // },
+  methods: {
+    deleteTodo(todo) {
+      this.$store.commit("deleteTodo", todo);
+    },
+  },
 };
 </script>
 
 <template>
   <div>
-    <div v-for="todo in store.todos">
-      <span>{{ todo.id }}</span>
+    <section>
       <span>{{ todo.name }}</span>
-    </div>
+      <span>{{ todo.done ? "Done" : "Not done" }}</span>
+      <span>Created: {{ todo.date }}</span>
+    </section>
+
+    <button @click="deleteTodo(todo)">Delete todo</button>
+    <button @click="showEditModal = true">Edit todo</button>
   </div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

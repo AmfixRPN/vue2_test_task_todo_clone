@@ -1,18 +1,44 @@
 <template>
   <div id="app">
     <main>
-      <TodoItem />
+      <span>Todo list</span>
+      <TodoItem v-for="todo in todos" :key="todo.id" :todo="todo" />
+      <aside>
+        <button @click="showCreateModal = true">Create todo</button>
+        <button @click="clearCompletedMutation">Clear completed todos</button>
+      </aside>
     </main>
   </div>
 </template>
 
 <script>
-
 import TodoItem from "@/components/TodoItem.vue";
 
 export default {
   name: "App",
   components: { TodoItem },
+  data() {
+    return { showCreateModal: false };
+  },
+  created() {
+    this.$store.dispatch("getTodos");
+  },
+  computed: {
+    todos() {
+      return this.$store.getters.todos;
+    },
+    // clearCompletedComputed() {
+    //   return this.$store.getters.todos.filter((item) => item.done === false)
+    // }
+  },
+  methods: {
+    // toClearCompleted() {
+    //   return this.clearCompletedComputed;
+    // }
+    clearCompletedMutation() {
+      this.$store.commit("clearCompleted");
+    },
+  },
 };
 </script>
 
