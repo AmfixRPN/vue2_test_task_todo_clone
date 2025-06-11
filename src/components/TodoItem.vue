@@ -40,18 +40,20 @@ export default {
 
 <template>
   <div>
-    <section class="TodoItemSection">
-      <span class="TodoItemSpan">{{ todo.name }}</span>
-      <button @click="switchDone(todo)" :class="{ 'btn-green': todo.done }">
-        {{ todo.done ? "Done" : "Not done" }}
-      </button>
-      <span class="TodoItemSpan"
-        >Created: {{ todo.date }} (Europe/Moscow/UTC+3)</span
-      >
-    </section>
+    <div class="todoItem">
+      <section class="TodoItemSection">
+        <span class="TodoItemSpan">{{ todo.name }}</span>
+        <button @click="switchDone(todo)" :class="{ 'btn-green': todo.done }">
+          {{ todo.done ? "Done" : "Not done" }}
+        </button>
+        <span class="TodoItemSpan"
+          >Created: {{ todo.date }} (Europe/Moscow/UTC+3)</span
+        >
+      </section>
 
-    <button @click="deleteTodo(todo)" class="del-btn">Delete todo</button>
-    <button @click="openEdit(todo)" class="edit-btn">Edit todo</button>
+      <button @click="deleteTodo(todo)" class="del-btn">Delete todo</button>
+      <button @click="openEdit(todo)" class="edit-btn">Edit todo</button>
+    </div>
 
     <ModalForm
       :visible="editingTodo"
@@ -71,17 +73,30 @@ export default {
   margin: 3% 0 1% 0;
 }
 .edit-btn {
-  background-color: darkcyan;
+  background-color: cyan;
   border-radius: 15%;
   margin: 0 1%;
+  padding: 1%;
 }
 .del-btn {
-  background-color: darkred;
+  background-color: indianred;
   border-radius: 15%;
   margin: 0 1%;
+  padding: 1%;
 }
 .btn-green {
-  background-color: green;
+  background-color: lightgreen;
   border-radius: 10%;
+  padding: 1%;
+}
+.todoItem {
+  background-color: bisque;
+  border: solid cornflowerblue;
+  padding-bottom: 1%;
+  margin: 1%;
+  width: 50%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

@@ -1,17 +1,36 @@
 <template>
   <div id="app">
     <main>
-      <nav class="nav-bar">
-        <button @click="showCreateModal = true" class="btn-green">
-          Create todo
-        </button>
-        <span class="nav-title">Todo list</span>
-        <button @click="clearCompletedMutation" class="del-btn">
-          Clear completed todos
-        </button>
+      <nav>
+        <div class="nav-bar">
+          <button @click="showCreateModal = true" class="btn-green">
+            Create todo
+          </button>
+          <span class="nav-title">Todo list</span>
+          <button @click="clearCompletedMutation" class="del-btn">
+            Clear completed todos
+          </button>
+        </div>
+
+        <input
+          v-model="search"
+          placeholder="Search by name"
+          class="searchInput"
+        />
       </nav>
 
-      <TodoItem v-for="todo in todos" :key="todo._id" :todo="todo" />
+      <div class="main-content">
+        <div v-if="!search">
+          <TodoItem v-for="todo in todos" :key="todo._id" :todo="todo" />
+        </div>
+
+        <div v-else>
+          <TodoItem v-for="todo in foundTodos" :key="todo._id" :todo="todo" />
+          <!--          <div v-for="todo in foundTodos" :key="todo._id">-->
+          <!--            {{ todo.name }}-->
+          <!--          </div>-->
+        </div>
+      </div>
 
       <!-- <aside>
         <button @click="showCreateModal = true">Create todo</button>
@@ -31,11 +50,17 @@
 import TodoItem from "@/components/TodoItem.vue";
 import ModalForm from "@/components/ModalForm.vue";
 
+import debounce from "lodash.debounce";
+
 export default {
   name: "App",
   components: { ModalForm, TodoItem },
   data() {
-    return { showCreateModal: false };
+    return {
+      showCreateModal: false,
+      search: "",
+      debouncedSearchItem: "",
+    };
   },
   created() {
     this.$store.dispatch("getTodos");
@@ -47,6 +72,11 @@ export default {
     // clearCompletedComputed() {
     //   return this.$store.getters.todos.filter((item) => item.done === false)
     // }
+    foundTodos() {
+      return this.$store.getters.todos.filter((item) =>
+        item.name.toLowerCase().includes(this.debouncedSearchItem.toLowerCase())
+      );
+    },
   },
   methods: {
     // toClearCompleted() {
@@ -57,6 +87,14 @@ export default {
     },
     createTodo(todo) {
       this.$store.dispatch("postTodo", todo);
+    },
+  },
+  watch: {
+    search: {
+      handler: debounce(function (val) {
+        this.debouncedSearchItem = val;
+      }, 250),
+      immediate: true,
     },
   },
 };
@@ -84,5 +122,8 @@ export default {
   left: 50%;
   transform: translateX(-50%);
   font-weight: bold;
+}
+.searchInput {
+  text-align: center;
 }
 </style>

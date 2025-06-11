@@ -40,6 +40,8 @@ export default {
       this.form.date = formatted;
       this.$emit("submit", { ...this.form });
       this.close();
+      if (this.mode === "create") this.form.name = "";
+      console.log(this.form);
     },
     close() {
       this.$emit("close");
