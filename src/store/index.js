@@ -4,7 +4,7 @@ import axios from "axios";
 
 Vue.use(Vuex);
 
-let currentToken = "f1c71c26a40b425da43255c9f6cef23f";
+let currentToken = "65d1c0947b52452086e21fb391c92af6";
 
 export default new Vuex.Store({
   state: {
@@ -18,10 +18,10 @@ export default new Vuex.Store({
       state.todos = payload;
     },
     clearCompleted(state) {
-      state.todos = state.todos.filter((item) => item.done === false);
+      state.todos = state.todos.filter((item) => !item.done);
     },
-    deleteTodo(state, todo) {
-      state.todos = state.todos.filter((item) => item.id !== todo.id);
+    deleteTodo(state, id) {
+      state.todos = state.todos.filter((item) => item._id !== id);
     },
   },
   actions: {
@@ -52,12 +52,12 @@ export default new Vuex.Store({
         throw new Error(error);
       }
     },
-    async deleteTodo({ dispatch }, id) {
+    async deleteTodo({ commit }, id) {
       try {
         await axios.delete(
           `https://crudcrud.com/api/${currentToken}/todos/${id}`
         );
-        dispatch("getTodos");
+        commit("deleteTodo", id);
       } catch (error) {
         console.error("deleteTodo error:", error.stack);
         console.error("deleteTodo error:", error.name);
@@ -65,17 +65,36 @@ export default new Vuex.Store({
         throw new Error(error);
       }
     },
-    async putTodo({ dispatch }, { todo, id }) {
+    async putTodo({ dispatch }, updatedTodo) {
       try {
+        const { _id, ...todoWithoutId } = updatedTodo;
         await axios.put(
-          `https://crudcrud.com/api/${currentToken}/todos/${id}`,
-          todo
+          `https://crudcrud.com/api/${currentToken}/todos/${_id}`,
+          todoWithoutId
         );
         dispatch("getTodos");
       } catch (error) {
         console.error("putTodo error:", error.stack);
         console.error("putTodo error:", error.name);
         console.error("putTodo error:", error.message);
+        throw new Error(error);
+      }
+    },
+    async clearCompleted({ state, commit }) {
+      const completedTodos = state.todos.filter((item) => item.done);
+      try {
+        await Promise.all(
+          completedTodos.map((todo) =>
+            axios.delete(
+              `https://crudcrud.com/api/${currentToken}/todos/${todo._id}`
+            )
+          )
+        );
+        commit("clearCompleted");
+      } catch (error) {
+        console.error("clearCompleted error:", error.stack);
+        console.error("clearCompleted error:", error.name);
+        console.error("clearCompleted error:", error.message);
         throw new Error(error);
       }
     },
