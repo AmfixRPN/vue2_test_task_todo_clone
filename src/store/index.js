@@ -4,7 +4,7 @@ import axios from "axios";
 
 Vue.use(Vuex);
 
-let currentToken = "6a8dde39115548c1af4267945221107d";
+let currentToken = "915df9b0028d4c929d48e671096c15bd";
 
 export default new Vuex.Store({
   state: {
